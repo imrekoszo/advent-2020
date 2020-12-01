@@ -1,0 +1,10 @@
+{:paths
+ ["src" "resources"]
+
+ :deps
+ {byte-streams/byte-streams
+  {:mvn/version "0.2.5-alpha2"}
+
+  net.cgrand/xforms
+  {:mvn/version "0.19.2"
+   :exclusions  [org.clojure/clojurescript]}}}

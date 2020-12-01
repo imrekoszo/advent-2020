@@ -1,0 +1,10 @@
+{:linters
+ {:unsorted-required-namespaces
+  {:level :error}
+
+  :unresolved-symbol
+  {:level   :error
+   :exclude [(net.cgrand.xforms/for [_ %])]}}
+
+ :lint-as
+ {net.cgrand.xforms/for clojure.core/for}}
