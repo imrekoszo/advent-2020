@@ -1,4 +1,4 @@
-(ns day1
+(ns imrekoszo.advent2020.day1
   (:require [clojure.java.io :as io]))
 
 (defonce input1
