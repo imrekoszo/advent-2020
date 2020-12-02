@@ -33,14 +33,12 @@
     line-seq))
 
 (comment
-
   (valid-password-count-1 demo-input)
   ;;=> 2
 
   ;; part 1
   (valid-password-count-1 input1)
   ;;=> 628
-
   )
 
 (defn valid-password?-2 [policy+password]
@@ -54,12 +52,10 @@
   (x/count (filter valid-password?-2) input))
 
 (comment
-
   (valid-password-count-2 demo-input)
   ;;=> 1
 
   ;; part
   (valid-password-count-2 input1)
   ;;=> 705
-
   )
