@@ -1,61 +1,52 @@
 (ns imrekoszo.advent2020.day2
   (:require
-    [clojure.java.io :as io]
+    [imrekoszo.advent2020.io :as iio]
     [net.cgrand.xforms :as x]))
 
-(def demo-input
-  ["1-3 a: abcde"
-   "1-3 b: cdefg"
-   "2-9 c: ccccccccc"])
-
-(def re #"(\d+)-(\d+) (\w): (.+)$")
-
-(defn parts [policy+password]
+(defn parse-line [policy+password]
   (let [[_ a b [char & _] password]
-        (re-matches re policy+password)]
-    [(Long/parseLong a)
-     (Long/parseLong b)
-     char
-     password]))
+        (re-matches #"(\d+)-(\d+) (\w): (.+)$" policy+password)]
+    [(Long/parseLong a) (Long/parseLong b) char password]))
 
-(defn valid-password?-1 [policy+password]
-  (let [[lo hi char password] (parts policy+password)
-        char-count (x/count (keep #{char}) password)]
-    (<= lo char-count hi)))
+(def demo-input
+  (mapv parse-line
+    ["1-3 a: abcde"
+     "1-3 b: cdefg"
+     "2-9 c: ccccccccc"]))
 
-(defn valid-password-count-1 [input]
-  (x/count (filter valid-password?-1) input))
+(defn valid-by-rule-1? [[lo hi char password]]
+  (let [matching-chars-in (keep #{char})]
+    (<= lo (x/count matching-chars-in password) hi)))
 
-(defonce input1
-  (->> "day2-input1.txt"
-    io/resource
-    io/reader
-    line-seq))
+(defn valid-by-rule-2? [[index1 index2 char password]]
+  (let [char-at           #(nth password (dec %))
+        matching-chars-at (comp (map char-at) (keep #{char}))]
+    (= 1 (x/count matching-chars-at [index1 index2]))))
+
+(defn calculate* [input valid?]
+  (x/count (filter valid?) input))
+
+(defn calculate1 [input]
+  (calculate* input valid-by-rule-1?))
+
+(defn calculate2 [input]
+  (calculate* input valid-by-rule-2?))
+
+(defonce full-input
+  (->> "day2.txt"
+    (iio/input-seq)
+    (map parse-line)))
 
 (comment
-  (valid-password-count-1 demo-input)
-  ;;=> 2
-
   ;; part 1
-  (valid-password-count-1 input1)
+  (calculate1 demo-input)
+  ;;=> 2
+  (calculate1 full-input)
   ;;=> 628
-  )
 
-(defn valid-password?-2 [policy+password]
-  (let [[index1 index2 char password] (parts policy+password)
-        char-at #(nth password (dec %))]
-    (->> [index1 index2]
-      (x/count (comp (map char-at) (keep #{char})))
-      (= 1))))
-
-(defn valid-password-count-2 [input]
-  (x/count (filter valid-password?-2) input))
-
-(comment
-  (valid-password-count-2 demo-input)
+  ;; part 2
+  (calculate2 demo-input)
   ;;=> 1
-
-  ;; part
-  (valid-password-count-2 input1)
+  (calculate2 full-input)
   ;;=> 705
   )
