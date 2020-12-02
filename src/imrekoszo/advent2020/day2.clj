@@ -32,7 +32,7 @@
 (defn calculate2 [input]
   (calculate* input valid-by-rule-2?))
 
-(defonce full-input
+(def full-input
   (->> "day2.txt"
     (iio/input-seq)
     (map parse-line)))
