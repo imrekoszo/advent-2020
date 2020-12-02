@@ -6,36 +6,61 @@
    "1-3 b: cdefg"
    "2-9 c: ccccccccc"])
 
-(def re #"^(?<min>\d+)-(?<max>\d+) (?<char>\w): (?<password>.+)$")
+(def re #"(\d+)-(\d+) (\w): (.+)$")
+
+(defn parts [policy+password]
+  (let [[_ a b [char & _] password]
+        (re-matches re policy+password)]
+    [(Long/parseLong a)
+     (Long/parseLong b)
+     char
+     password]))
 
 (defn xcount [xform coll]
   (transduce xform (completing (fn [acc _] (inc acc))) 0 coll))
 
-(defn valid-password? [policy+password]
-  (let [[_ lo hi [char & _] password]
-        (re-matches re policy+password)]
-    (<= (Long/parseLong lo)
-        (xcount (keep #{char}) password)
-        (Long/parseLong hi))))
+(defn valid-password?-1 [policy+password]
+  (let [[lo hi char password] (parts policy+password)
+        char-count (xcount (keep #{char}) password)]
+    (<= lo char-count hi)))
 
-(defn valid-password-count [input]
-  (xcount (filter valid-password?) input))
+(defn valid-password-count-1 [input]
+  (xcount (filter valid-password?-1) input))
 
 (defonce input1
   (->> "day2-input1.txt"
-       io/resource
-       io/reader
-       line-seq))
+    io/resource
+    io/reader
+    line-seq))
 
 (comment
 
-  (valid-password-count demo-input)
+  (valid-password-count-1 demo-input)
+  ;;=> 2
 
   ;; part 1
-  (valid-password-count input1)
+  (valid-password-count-1 input1)
   ;;=> 628
 
+  )
 
+(defn valid-password?-2 [policy+password]
+  (let [[index1 index2 char password] (parts policy+password)
+        char-at #(nth password (dec %))]
+    (->> [index1 index2]
+      (xcount (comp (map char-at) (keep #{char})))
+      (= 1))))
 
+(defn valid-password-count-2 [input]
+  (xcount (filter valid-password?-2) input))
+
+(comment
+
+  (valid-password-count-2 demo-input)
+  ;;=> 1
+
+  ;; part
+  (valid-password-count-2 input1)
+  ;;=> 705
 
   )
