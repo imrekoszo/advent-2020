@@ -1,5 +1,7 @@
 (ns imrekoszo.advent2020.day2
-  (:require [clojure.java.io :as io]))
+  (:require
+    [clojure.java.io :as io]
+    [net.cgrand.xforms :as x]))
 
 (def demo-input
   ["1-3 a: abcde"
@@ -16,16 +18,13 @@
      char
      password]))
 
-(defn xcount [xform coll]
-  (transduce xform (completing (fn [acc _] (inc acc))) 0 coll))
-
 (defn valid-password?-1 [policy+password]
   (let [[lo hi char password] (parts policy+password)
-        char-count (xcount (keep #{char}) password)]
+        char-count (x/count (keep #{char}) password)]
     (<= lo char-count hi)))
 
 (defn valid-password-count-1 [input]
-  (xcount (filter valid-password?-1) input))
+  (x/count (filter valid-password?-1) input))
 
 (defonce input1
   (->> "day2-input1.txt"
@@ -48,11 +47,11 @@
   (let [[index1 index2 char password] (parts policy+password)
         char-at #(nth password (dec %))]
     (->> [index1 index2]
-      (xcount (comp (map char-at) (keep #{char})))
+      (x/count (comp (map char-at) (keep #{char})))
       (= 1))))
 
 (defn valid-password-count-2 [input]
-  (xcount (filter valid-password?-2) input))
+  (x/count (filter valid-password?-2) input))
 
 (comment
 

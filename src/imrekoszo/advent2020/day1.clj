@@ -1,5 +1,6 @@
 (ns imrekoszo.advent2020.day1
-  (:require [clojure.java.io :as io]))
+  (:require
+    [clojure.java.io :as io]))
 
 (defonce input1
   (->> "day1-input1.txt"
