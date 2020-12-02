@@ -10,13 +10,10 @@
     (line-seq)
     (map #(Integer/parseInt %))))
 
-(def first-match
-  (partial transduce
-    (comp
-      (filter #(= 2020 (apply + %)))
-      (map #(apply * %)))
-    (completing #(reduced %2))
-    nil))
+(defn first-match [coll]
+  (->> coll
+    (x/some (filter #(= 2020 (apply + %))))
+    (apply *)))
 
 (defn result1 []
   (first-match (x/for [a input1 b input1] [a b])))
