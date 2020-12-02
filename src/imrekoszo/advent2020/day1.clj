@@ -1,6 +1,7 @@
 (ns imrekoszo.advent2020.day1
   (:require
     [clojure.java.io :as io]
+    [clojure.math.combinatorics :as combo]
     [net.cgrand.xforms :as x]))
 
 (defonce input1
@@ -16,10 +17,10 @@
     (apply *)))
 
 (defn result1 []
-  (first-match (x/for [a input1 b input1] [a b])))
+  (first-match (combo/combinations input1 2)))
 
 (defn result2 []
-  (first-match (x/for [a input1 b input1 c input1] [a b c])))
+  (first-match (combo/combinations input1 3)))
 
 (comment
   (result1)
