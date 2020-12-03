@@ -1,52 +1,40 @@
 (ns imrekoszo.advent2020.day2
   (:require
-    [imrekoszo.advent2020.io :as iio]
+    [imrekoszo.advent2020.util :as u]
     [net.cgrand.xforms :as x]))
 
 (defn parse-line [policy+password]
   (let [[_ a b [char & _] password]
-        (re-matches #"(\d+)-(\d+) (\w): (.+)$" policy+password)]
-    [(Long/parseLong a) (Long/parseLong b) char password]))
+        (re-matches #"(\d+)-(\d+) (.): (.+)$" policy+password)]
+    [(u/parse-long a) (u/parse-long b) char password]))
 
-(def demo-input
-  (mapv parse-line
-    ["1-3 a: abcde"
-     "1-3 b: cdefg"
-     "2-9 c: ccccccccc"]))
+(def parse-input (u/parse-input-fn #(map parse-line %)))
 
-(defn valid-by-rule-1? [[lo hi char password]]
-  (let [matching-chars-in (keep #{char})]
-    (<= lo (x/count matching-chars-in password) hi)))
+(defn valid?-1 [[lo hi char password]]
+  (let [matching-chars-in-xf (keep #{char})]
+    (<= lo (x/count matching-chars-in-xf password) hi)))
 
-(defn valid-by-rule-2? [[index1 index2 char password]]
-  (let [char-at           #(nth password (dec %))
-        matching-chars-at (comp (map char-at) (keep #{char}))]
-    (= 1 (x/count matching-chars-at [index1 index2]))))
+(defn valid?-2 [[index1 index2 char password]]
+  (let [char-at? #(= char (nth password (dec %)))]
+    (not= (char-at? index1) (char-at? index2))))
 
-(defn calculate* [input valid?]
+(defn calculate [input valid?]
   (x/count (filter valid?) input))
 
-(defn calculate1 [input]
-  (calculate* input valid-by-rule-1?))
+(defn part1
+  {:test #(assert (= 2 (part1 (parse-input "2/demo.txt"))))}
+  [input]
+  (calculate input valid?-1))
 
-(defn calculate2 [input]
-  (calculate* input valid-by-rule-2?))
-
-(def full-input
-  (->> "day2.txt"
-    (iio/input-seq)
-    (map parse-line)))
+(defn part2
+  {:test #(assert (= 1 (part2 (parse-input "2/demo.txt"))))}
+  [input]
+  (calculate input valid?-2))
 
 (comment
-  ;; part 1
-  (calculate1 demo-input)
-  ;;=> 2
-  (calculate1 full-input)
+  (part1 (parse-input "2/full.txt"))
   ;;=> 628
 
-  ;; part 2
-  (calculate2 demo-input)
-  ;;=> 1
-  (calculate2 full-input)
+  (part2 (parse-input "2/full.txt"))
   ;;=> 705
   )
