@@ -4,7 +4,7 @@
             [imrekoszo.advent2020.util :as u]
             [net.cgrand.xforms :as x]))
 
-(def parse-raw-fields-xf
+(def parse-fields-xf
   (comp
     (map #(str/split % #":"))
     (x/for [[k v] %] [(keyword k) v])))
@@ -13,12 +13,12 @@
   (-> raw-entry
     (->> (str/join " "))
     (str/split #" ")
-    (->> (into {} parse-raw-fields-xf))))
+    (->> (into {} parse-fields-xf))))
 
 (def parse-xf
   (comp
     (partition-by empty?)
-    (remove #(every? empty? %))
+    (remove #{[""]})
     (map parse-entry)))
 
 (defn parse-input [lines]
