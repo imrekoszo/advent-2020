@@ -22,7 +22,7 @@
     (map parse-entry)))
 
 (defn parse-input [lines]
-  (sequence parse-xf lines))
+  (into [] parse-xf lines))
 
 (def load-input! (u/parse-input-fn parse-input))
 (def test-input* (delay (load-input! "4/test.txt")))
