@@ -151,7 +151,7 @@
     (x/some
       (comp
         (index-combinations entry-count)
-        (filter #(= 2020 (apply + %)))))
+        (filter matching-combination?)))
     (apply *)))
 
 (defn part1-index-combinations
