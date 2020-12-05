@@ -90,17 +90,19 @@
   {:test
    #(do
       (assert
+        (= [[]]
+          (into [] (index-combinations -1) [1 2 3])
+          (into [] (index-combinations 0) [1 2 3])
+          (into [] (index-combinations 4) [1 2 3])))
+      (assert
         (= [[1] [2] [3] [4]]
           (into [] (index-combinations 1) [1 2 3 4])))
       (assert
-        (= [[1 2] [1 3] [1 4] [2 3] [2 4] [3 4]]
-          (into [] (index-combinations 2) [1 2 3 4])))
-      (assert
-        (= [[]]
-          (into [] (index-combinations 4) [1 2 3])))
-      (assert
         (= [[1 2 3]]
           (into [] (index-combinations 3) [1 2 3])))
+      (assert
+        (= [[1 2] [1 3] [1 4] [2 3] [2 4] [3 4]]
+          (into [] (index-combinations 2) [1 2 3 4])))
       (assert
         (= [[1 2 3]
             [1 2 4]
