@@ -17,8 +17,7 @@
 
 (def parse-xf
   (comp
-    (partition-by empty?)
-    (remove #{[""]})
+    u/separate-by-blank-lines-xf
     (map parse-entry)))
 
 (defn parse-input [lines]

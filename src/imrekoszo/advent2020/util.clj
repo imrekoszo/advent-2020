@@ -13,3 +13,8 @@
 
 (defn parse-long [s]
   (Long/parseLong s))
+
+(def separate-by-blank-lines-xf
+  (comp
+    (partition-by empty?)
+    (remove #{[""]})))
