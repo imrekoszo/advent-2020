@@ -4,7 +4,10 @@
             [net.cgrand.xforms :as x]))
 
 (defn fbrl->long
-  {:test #(assert (= 44 (fbrl->long "FBFBBFF")))}
+  {:test
+   #(assert (= [357 567 119 820]
+              (mapv fbrl->long
+                ["FBFBBFFRLR" "BFFFBBFRRR" "FFFBBBFRRR" "BBFFBBFRLL"])))}
   [s]
   (-> s
     (str/replace #"F|B|R|L" #(case % ("F" "L") "0" ("B" "R") "1"))
