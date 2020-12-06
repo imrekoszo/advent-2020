@@ -100,18 +100,18 @@
    #(do
       (assert
         (= [[]]
-          (into [] (index-combinations -1) [1 2 3])
-          (into [] (index-combinations 0) [1 2 3])
-          (into [] (index-combinations 4) [1 2 3])))
+          (x/into [] (index-combinations -1) [1 2 3])
+          (x/into [] (index-combinations 0) [1 2 3])
+          (x/into [] (index-combinations 4) [1 2 3])))
       (assert
         (= [[1] [2] [3] [4]]
-          (into [] (index-combinations 1) [1 2 3 4])))
+          (x/into [] (index-combinations 1) [1 2 3 4])))
       (assert
         (= [[1 2 3]]
-          (into [] (index-combinations 3) [1 2 3])))
+          (x/into [] (index-combinations 3) [1 2 3])))
       (assert
         (= [[1 2] [1 3] [1 4] [2 3] [2 4] [3 4]]
-          (into [] (index-combinations 2) [1 2 3 4])))
+          (x/into [] (index-combinations 2) [1 2 3 4])))
       (assert
         (= [[1 2 3]
             [1 2 4]
@@ -123,7 +123,7 @@
             [2 3 5]
             [2 4 5]
             [3 4 5]]
-          (into [] (index-combinations 3) [1 2 3 4 5]))))}
+          (x/into [] (index-combinations 3) [1 2 3 4 5]))))}
   [n]
   (fn [rf]
     (let [vs (transient [])]
@@ -148,7 +148,7 @@
                (as-> result $
                  (transduce
                    (comp (index-combinations rn)
-                     (map #(into [fv] %)))
+                     (map #(x/into [fv] %)))
                    rf $ rvs)
                  (transduce
                    (index-combinations n)
@@ -184,18 +184,18 @@
    #(do
       (assert
         (= []
-          (into [] (index-combinations-2 -1) [1 2 3])
-          (into [] (index-combinations-2 0) [1 2 3])
-          (into [] (index-combinations-2 4) [1 2 3])))
+          (x/into [] (index-combinations-2 -1) [1 2 3])
+          (x/into [] (index-combinations-2 0) [1 2 3])
+          (x/into [] (index-combinations-2 4) [1 2 3])))
       (assert
         (= [[1] [2] [3] [4]]
-          (into [] (index-combinations-2 1) [1 2 3 4])))
+          (x/into [] (index-combinations-2 1) [1 2 3 4])))
       (assert
         (= [[1 2 3]]
-          (into [] (index-combinations-2 3) [1 2 3])))
+          (x/into [] (index-combinations-2 3) [1 2 3])))
       (assert
         (= [[1 2] [1 3] [2 3] [1 4] [2 4] [3 4]]
-          (into [] (index-combinations-2 2) [1 2 3 4])))
+          (x/into [] (index-combinations-2 2) [1 2 3 4])))
       (assert
         (= [[1 2 3]
             [1 2 4]
@@ -207,7 +207,7 @@
             [1 4 5]
             [2 4 5]
             [3 4 5]]
-          (into [] (index-combinations-2 3) [1 2 3 4 5]))))}
+          (x/into [] (index-combinations-2 3) [1 2 3 4 5]))))}
   [n]
   (fn [rf]
     (let [vvs (volatile! [])]

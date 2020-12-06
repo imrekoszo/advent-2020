@@ -13,7 +13,7 @@
   (-> raw-entry
     (->> (str/join " "))
     (str/split #" ")
-    (->> (into {} parse-fields-xf))))
+    (->> (x/into {} parse-fields-xf))))
 
 (def parse-xf
   (comp
@@ -22,7 +22,7 @@
     (map parse-entry)))
 
 (defn parse-input [lines]
-  (into [] parse-xf lines))
+  (x/into [] parse-xf lines))
 
 (def load-input! (u/parse-input-fn parse-input))
 (def test-input* (delay (load-input! "4/test.txt")))
