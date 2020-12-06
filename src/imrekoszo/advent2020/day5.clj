@@ -18,9 +18,20 @@
 
 (defn part1
   ([] (part1 @live-input*))
-  ([input]
-   (x/some x/max input)))
+  ([seat-ids]
+   (x/some x/max seat-ids)))
+
+(defn part2
+  ([] (part2 @live-input*))
+  ([seat-ids]
+   (x/some
+     (comp
+       (x/sort)
+       (x/partition 2 1)
+       (x/for [[a b] %] (when (= b (+ a 2)) (inc a))))
+     seat-ids)))
 
 (comment
   (part1) ;;=> 965
+  (part2) ;;=> 524
   )
