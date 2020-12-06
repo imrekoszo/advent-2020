@@ -20,6 +20,21 @@
 (defn test-part2 [f]
   (fn [] (assert (= 241861950 (f @test-input*)))))
 
+;; I am not particularly satisfied with these solutions
+;; Although they are better than using clojure.core/for (which returns a
+;; lazy sequence as opposed to the eduction returned by x/for),
+;; there are still 2 things I don't like:
+;;
+;; 1/ Like for, x/for cannot be parameterized dynamically, so I can't say
+;;    give me the cartesian product of n times the same set. Which is why I
+;;    had to write the x/for twice. (Didn't want to macro it)
+;; 2/ This task doesn't need a cartesian product, but n-tuples assembled from
+;;    the items at n-combinations of incides within the input.
+;;
+;; Tried some alternative implementations in the namespace
+;; imrekoszo.advent2020.day1-alternatives but they all appear to be slower than
+;; this one.
+
 (defn part1
   {:test (test-part1 part1)}
   ([] (part1 @live-input*))
