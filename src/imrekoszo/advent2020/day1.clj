@@ -29,7 +29,7 @@
 ;;    give me the cartesian product of n times the same set. Which is why I
 ;;    had to write the x/for twice. (Didn't want to macro it)
 ;; 2/ This task doesn't need a cartesian product, but n-tuples assembled from
-;;    the items at n-combinations of incides within the input.
+;;    the items at n-combinations of indices within the input.
 ;;
 ;; Tried some alternative implementations in the namespace
 ;; imrekoszo.advent2020.day1-alternatives but they all appear to be slower than
