@@ -22,13 +22,11 @@
             (assert (= 2 (calculate @test-input* 1 2))))}
   [grid step-right step-down]
   (let [width              (count (first grid))
-        touches-row?       #(-> % (mod step-down) (zero?))
-        col-at-when-in-row #(-> % (/ step-down) (* step-right) (mod width))
+        col-at-when-in-row #(-> % (* step-right) (mod width))
         trees-encountered  (fn [row-index row]
-                             (or (and (touches-row? row-index)
-                                   (tree-at? row (col-at-when-in-row row-index)))
+                             (or (tree-at? row (col-at-when-in-row row-index))
                                nil))]
-    (x/count (keep-indexed trees-encountered) grid)))
+    (x/count (comp (take-nth step-down) (keep-indexed trees-encountered)) grid)))
 
 (defn part1
   {:test #(assert (= 7 (part1 @test-input*)))}
