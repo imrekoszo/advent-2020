@@ -1,12 +1,12 @@
 (ns imrekoszo.advent2020.day1-alternatives
   (:require
-    [clojure.math.combinatorics :as combo]
-    [imrekoszo.advent2020.day1
-     :as day1
-     :refer [part1 part2]
-     :rename {part1 part1-xfor
-              part2 part2-xfor}]
-    [net.cgrand.xforms :as x]))
+   [clojure.math.combinatorics :as combo]
+   [imrekoszo.advent2020.day1
+    :as day1
+    :refer [part1 part2]
+    :rename {part1 part1-xfor
+             part2 part2-xfor}]
+   [net.cgrand.xforms :as x]))
 
 (def matching-combination-of-2? (day1/matching-combination?-fn 2 false))
 (def matching-combination-of-3? (day1/matching-combination?-fn 3 false))
