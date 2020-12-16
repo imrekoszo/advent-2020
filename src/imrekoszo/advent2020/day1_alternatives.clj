@@ -102,25 +102,33 @@
 (defn index-combinations
   {:test (test-index-combinations-fn index-combinations)}
   [n]
-  (fn [rf]
-    (let [vvs (volatile! [])]
+  (cond
+    (< n 1)
+    (fn [rf]
+      (fn
+        ([] (rf))
+        ([result] result)
+        ([result _] result)))
+
+    (= 1 n)
+    (fn [rf]
       (fn
         ([] (rf))
         ([result] (rf result))
-        ([result input]
-         (if (< n 1)
-           result
+        ([result input] (rf result [input]))))
+
+    :else
+    (fn [rf]
+      (let [vvs (volatile! [])]
+        (fn
+          ([] (rf))
+          ([result] (rf result))
+          ([result input]
            (let [prev-vs @vvs
                  _       (vswap! vvs conj input)
                  vs      @vvs
                  cvs     (count vs)]
              (cond
-               (= n 1)
-               (rf result [input])
-
-               (= n cvs)
-               (rf result vs)
-
                (< n cvs)
                (transduce
                  (comp
@@ -129,6 +137,9 @@
                  rf
                  result
                  prev-vs)
+
+               (= n cvs)
+               (rf result vs)
 
                :else
                result))))))))
