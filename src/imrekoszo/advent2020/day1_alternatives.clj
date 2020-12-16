@@ -91,14 +91,6 @@
         [3 4 5]]
       (into [] (index-combinations 3) [1 2 3 4 5]))))
 
-(defn calculate-index-combinations [input entry-count matching-combination? product-of index-combinations-xf]
-  (->> input
-    (x/some
-      (comp
-        (index-combinations-xf entry-count)
-        (filter matching-combination?)))
-    (product-of)))
-
 (defn index-combinations
   {:test (test-index-combinations-fn index-combinations)}
   [n]
@@ -144,17 +136,25 @@
                :else
                result))))))))
 
+(defn calculate-index-combinations [input entry-count matching-combination? product-of]
+  (->> input
+    (x/some
+      (comp
+        (index-combinations entry-count)
+        (filter matching-combination?)))
+    (product-of)))
+
 (defn part1-index-combinations
   {:test (day1/test-part1 part1-index-combinations)}
   ([] (part1-index-combinations @day1/live-input*))
   ([input]
-   (calculate-index-combinations input 2 matching-combination-of-2?-vec product-of-2 index-combinations)))
+   (calculate-index-combinations input 2 matching-combination-of-2?-vec product-of-2)))
 
 (defn part2-index-combinations
   {:test (day1/test-part2 part2-index-combinations)}
   ([] (part2-index-combinations @day1/live-input*))
   ([input]
-   (calculate-index-combinations input 3 matching-combination-of-3?-vec product-of-3 index-combinations)))
+   (calculate-index-combinations input 3 matching-combination-of-3?-vec product-of-3)))
 
 ;; Alternative 4: like index-combinations but uses fewer colls inside, leaving partitioning to the caller
 
@@ -170,8 +170,7 @@
 
 (defn index-combinations-2
   {:test
-   (let [sut #(comp (index-combinations-2 %) (x/partition %))]
-     (test-index-combinations-fn sut))}
+   (test-index-combinations-fn #(comp (index-combinations-2 %) (x/partition %)))}
   [n]
   (cond
     (< n 1)
@@ -211,24 +210,74 @@
                :else
                result))))))))
 
+;; Metod 1 of using index-combinations-2
+(defn calculate-index-combinations-2 [input entry-count matching-combination? product-of]
+  (->> input
+    (x/some
+      (comp
+        (index-combinations-2 entry-count)
+        (x/partition entry-count)
+        (filter matching-combination?)))
+    (product-of)))
+
 (defn part1-index-combinations-2
   {:test (day1/test-part1 part1-index-combinations-2)}
   ([] (part1-index-combinations-2 @day1/live-input*))
   ([input]
-   (calculate-index-combinations input 2 matching-combination-of-2?-vec product-of-2 #(comp (index-combinations-2 %) (x/partition %)))))
+   (calculate-index-combinations-2 input 2 matching-combination-of-2?-vec product-of-2)))
 
 (defn part2-index-combinations-2
   {:test (day1/test-part2 part2-index-combinations-2)}
   ([] (part2-index-combinations-2 @day1/live-input*))
   ([input]
-   (calculate-index-combinations input 3 matching-combination-of-3?-vec product-of-3 #(comp (index-combinations-2 %) (x/partition %)))))
+   (calculate-index-combinations-2 input 3 matching-combination-of-3?-vec product-of-3)))
+
+;; Method 2 of using index-combinations-2
+(defn sum-product-xf [expected-sum]
+  (let [sum     (volatile! 0)
+        product (volatile! 1)]
+    (fn [rf]
+      (fn
+        ([] (rf))
+        ([result]
+         (if (= expected-sum @sum)
+           (rf result product)
+           (rf result)))
+        ([result input]
+         (if (<= @sum expected-sum)
+           (if (<= (vreset! sum (+ @sum input)) expected-sum)
+             (do (vreset! product (* @product input))
+               result)
+             (ensure-reduced result))
+           (ensure-reduced result))
+         result)))))
+
+(defn calculate-index-combinations-2-2 [input entry-count]
+  (x/some
+    (comp
+      (index-combinations-2 entry-count)
+      (x/partition entry-count (sum-product-xf 2020)))
+    input))
+
+(defn part1-index-combinations-2-2
+  {:test (day1/test-part1 part1-index-combinations-2-2)}
+  ([] (part1-index-combinations-2-2 @day1/live-input*))
+  ([input]
+   (calculate-index-combinations-2-2 input 2)))
+
+(defn part2-index-combinations-2-2
+  {:test (day1/test-part2 part2-index-combinations-2-2)}
+  ([] (part2-index-combinations-2-2 @day1/live-input*))
+  ([input]
+   (calculate-index-combinations-2-2 input 3)))
 
 (comment
   (require '[criterium.core :refer [bench quick-bench]])
 
-  (bench (part2-for)) ;; ~169ms
-  (bench (part2-xfor)) ;; ~128ms
-  (bench (part2-combinations)) ;; ~664ms
-  (bench (part2-index-combinations)) ;; ~183ms
-  (bench (part2-index-combinations-2)) ;; ~183ms
+  (quick-bench (part2-for)) ;; ~169ms
+  (quick-bench (part2-xfor)) ;; ~128ms
+  (quick-bench (part2-combinations)) ;; ~664ms
+  (quick-bench (part2-index-combinations)) ;; ~180ms
+  (quick-bench (part2-index-combinations-2)) ;; ~183ms
+  (quick-bench (part2-index-combinations-2-2)) ;; ~750ms wtf
   )
