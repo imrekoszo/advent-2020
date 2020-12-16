@@ -156,11 +156,79 @@
   ([input]
    (calculate-index-combinations input 3 matching-combination-of-3?-vec product-of-3 index-combinations)))
 
-;; Idea for one more alternative: index-combinations could just return items without wrapping them, and I could try partitioning after
+;; Alternative 4: like index-combinations but uses fewer colls inside, leaving partitioning to the caller
+
+(defn append-xf [value]
+  {:test
+   #(assert (= [0 1 2 3 :foo]
+              (into [] (append-xf :foo) (range 4))))}
+  (fn [rf]
+    (fn
+      ([] (rf))
+      ([result] (rf result value))
+      ([result input] (rf result input)))))
+
+(defn index-combinations-2
+  {:test
+   (let [sut #(comp (index-combinations-2 %) (x/partition %))]
+     (test-index-combinations-fn sut))}
+  [n]
+  (cond
+    (< n 1)
+    (fn [rf]
+      (fn
+        ([] (rf))
+        ([result] result)
+        ([result _] result)))
+
+    (= 1 n)
+    identity
+
+    :else
+    (fn [rf]
+      (let [vvs (volatile! [])]
+        (fn
+          ([] (rf))
+          ([result] (rf result))
+          ([result input]
+           (let [prev-vs @vvs
+                 _       (vswap! vvs conj input)
+                 vs      @vvs
+                 cvs     (count vs)]
+             (cond
+               (< n cvs)
+               (transduce
+                 (comp
+                   (index-combinations-2 (dec n))
+                   (x/partition (dec n) (append-xf input)))
+                 rf
+                 result
+                 prev-vs)
+
+               (= n cvs)
+               (reduce rf result vs)
+
+               :else
+               result))))))))
+
+(defn part1-index-combinations-2
+  {:test (day1/test-part1 part1-index-combinations-2)}
+  ([] (part1-index-combinations-2 @day1/live-input*))
+  ([input]
+   (calculate-index-combinations input 2 matching-combination-of-2?-vec product-of-2 #(comp (index-combinations-2 %) (x/partition %)))))
+
+(defn part2-index-combinations-2
+  {:test (day1/test-part2 part2-index-combinations-2)}
+  ([] (part2-index-combinations-2 @day1/live-input*))
+  ([input]
+   (calculate-index-combinations input 3 matching-combination-of-3?-vec product-of-3 #(comp (index-combinations-2 %) (x/partition %)))))
 
 (comment
-  (time (part2-for)) ;; ~150ms
-  (time (part2-xfor)) ;; ~137ms
-  (time (part2-combinations)) ;; ~724ms
-  (time (part2-index-combinations)) ;; ~335ms
+  (require '[criterium.core :refer [bench quick-bench]])
+
+  (bench (part2-for)) ;; ~169ms
+  (bench (part2-xfor)) ;; ~128ms
+  (bench (part2-combinations)) ;; ~664ms
+  (bench (part2-index-combinations)) ;; ~183ms
+  (bench (part2-index-combinations-2)) ;; ~183ms
   )
